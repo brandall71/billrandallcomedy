@@ -1,0 +1,6 @@
+[build]
+  functions = "netlify/functions"
+
+[[scheduled-functions]]
+  name = "keep-alive"
+  schedule = "0 */6 * * *"
