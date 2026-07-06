@@ -4,297 +4,148 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bill Randall Comedy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Georgia, serif; background: #0a0a0a; color: #f0ece0; min-height: 100vh; }
-  .site { max-width: 640px; margin: 0 auto; padding: 3rem 1.5rem 4rem; text-align: center; }
-  .photo { width: 240px; height: 240px; border-radius: 50%; object-fit: cover; border: 3px solid #444; margin-bottom: 1.5rem; }
-  h1 { font-size: 2.2rem; font-weight: normal; letter-spacing: 0.05em; margin-bottom: 0.4rem; color: #ffffff; }
-  .tagline { color: #aaa; font-size: 1.15rem; margin-bottom: 0.5rem; }
-  .credits { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin: 1rem 0 1.5rem; }
-  .credit { background: #1a1a1a; border: 1px solid #333; border-radius: 20px; padding: 0.4rem 1.1rem; font-size: 0.95rem; color: #ccc; }
-  .available { font-size: 1rem; color: #888; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2.5rem; }
-  .cta { display: block; background: #111; border: 1px solid #333; border-radius: 8px; padding: 1rem; text-decoration: none; color: #f0ece0; transition: border-color 0.2s; }
-  .cta:hover { border-color: #666; }
-  .cta .icon { font-size: 1.3rem; display: block; margin-bottom: 0.4rem; }
-  .cta strong { display: block; font-size: 0.95rem; margin-bottom: 0.2rem; }
-  .cta small { color: #888; font-size: 0.78rem; }
-  h2 { font-size: 1.1rem; font-weight: normal; letter-spacing: 0.15em; text-transform: uppercase; color: #888; margin-bottom: 1.2rem; }
-  .shows-list { margin-bottom: 2.5rem; min-height: 40px; }
-  .show-item { background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; text-align: left; position: relative; }
-  .show-venue { font-size: 1rem; font-weight: bold; margin-bottom: 0.2rem; }
-  .show-meta { font-size: 0.85rem; color: #999; }
-  .show-link { display: inline-block; margin-top: 0.4rem; font-size: 0.8rem; color: #aaa; text-decoration: underline; }
-  .no-shows { color: #555; font-size: 0.9rem; padding: 1rem 0; }
-  .social { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2.5rem; }
-  .social a { color: #aaa; text-decoration: none; font-size: 1.1rem; }
-  .social a:hover { color: #fff; }
-  footer { color: #444; font-size: 0.8rem; }
-  .gear-btn { background: none; border: none; cursor: pointer; color: #333; font-size: 1.2rem; margin-top: 1.5rem; transition: color 0.2s; }
-  .gear-btn:hover { color: #666; }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: #111; border: 1px solid #333; border-radius: 12px; padding: 2rem; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; }
-  .modal h3 { font-size: 1rem; font-weight: normal; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; color: #ccc; }
-  .modal input { width: 100%; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; padding: 0.6rem 0.8rem; color: #f0ece0; font-size: 0.9rem; margin-bottom: 0.75rem; }
-  .modal input:focus { outline: none; border-color: #666; }
-  .btn-row { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
-  .btn { flex: 1; padding: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #1a1a1a; color: #f0ece0; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
-  .btn:hover { background: #222; }
-  .btn.primary { background: #f0ece0; color: #0a0a0a; border-color: #f0ece0; }
-  .btn.primary:hover { background: #ddd; }
-  .btn.danger { border-color: #552222; color: #f08080; }
-  .btn.danger:hover { background: #2a1a1a; }
-  .btn.full { width: 100%; margin-bottom: 0.75rem; display: block; text-align: center; }
-  .err { color: #f08080; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
-  .success-msg { color: #6dbe8d; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
-  .loading { color: #555; font-size: 0.85rem; padding: 1rem 0; }
-  .manage-show-item { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-  .manage-show-info { font-size: 0.85rem; text-align: left; }
-  .manage-show-venue { font-weight: bold; color: #f0ece0; }
-  .manage-show-date { color: #888; font-size: 0.78rem; margin-top: 2px; }
-  .manage-btns { display: flex; gap: 0.4rem; flex-shrink: 0; }
-  .manage-btn { background: #1a1a1a; border: 1px solid #333; border-radius: 5px; color: #aaa; font-size: 0.8rem; padding: 4px 10px; cursor: pointer; }
-  .manage-btn:hover { background: #222; color: #fff; }
-  .manage-btn.del { border-color: #552222; color: #f08080; }
-  .manage-btn.del:hover { background: #2a1a1a; }
-  .menu-divider { border: none; border-top: 1px solid #222; margin: 0.75rem 0; }
-  .logout-btn { background: none; border: none; color: #555; font-size: 0.8rem; cursor: pointer; margin-top: 0.5rem; display: block; width: 100%; text-align: center; }
-  .logout-btn:hover { color: #aaa; }
+  body { font-family: 'Open Sans', sans-serif; background: #080c14; color: #f0ece0; min-height: 100vh; display: flex; flex-direction: column; }
+  nav { background: #080c14; border-bottom: 2px solid #0085ca; padding: 1rem 2rem; display: flex; align-items: center; gap: 2rem; position: sticky; top: 0; z-index: 10; }
+  nav .brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.15em; color: #fff; margin-right: auto; }
+  nav .brand span { color: #0085ca; }
+  nav a { color: #fff; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.2s; }
+  nav a.active { color: #0085ca; }
+  nav a:hover { color: #0085ca; }
+  .hero { text-align: center; padding: 2.5rem 1.5rem 2rem; border-bottom: 1px solid #0d1520; }
+  .photo { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 3px solid #444; margin-bottom: 1.2rem; }
+  .hero h1 { font-family: Georgia, serif; font-size: 2.5rem; font-weight: normal; color: #fff; margin-bottom: 0.2rem; }
+  .hero h1 span { color: #0085ca; }
+  .hero .location { color: #666; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin: 0.5rem 0 0.8rem; }
+  .hero .bio-line { color: #aaa; font-size: 0.95rem; margin-bottom: 1.2rem; }
+  .social-top { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .social-top a { display: flex; align-items: center; gap: 0.5rem; color: #888; text-decoration: none; font-size: 0.8rem; border: 1px solid #1a2535; border-radius: 20px; padding: 0.35rem 1rem; transition: all 0.2s; }
+  .social-top a:hover { color: #fff; border-color: #0085ca; }
+  .social-top svg { width: 14px; height: 14px; fill: #0085ca; flex-shrink: 0; }
+  .credits { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+  .credit { background: #1a1a1a; border: 1px solid #333; border-radius: 20px; padding: 0.3rem 0.9rem; font-size: 0.8rem; color: #ccc; }
+  .available { font-size: 0.75rem; color: #444; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.75rem; }
+  .section { max-width: 580px; margin: 0 auto; padding: 1.8rem 1.5rem; width: 100%; border-bottom: 1px solid #0d1520; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; color: #0085ca; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #0d1520; }
+  .show-item { background: #0d1520; border-left: 3px solid #0085ca; border-radius: 0 6px 6px 0; padding: 0.9rem 1.1rem; margin-bottom: 0.75rem; }
+  .show-venue { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
+  .show-meta { font-size: 0.8rem; color: #666; }
+  .show-link { font-size: 0.75rem; color: #0085ca; text-decoration: none; display: inline-block; margin-top: 0.3rem; }
+  .no-shows { color: #444; font-size: 0.85rem; padding: 1rem 0; }
+  .loading { color: #444; font-size: 0.85rem; }
+  .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .cta { display: block; background: #0d1520; border: 1px solid #1a2535; border-radius: 6px; padding: 0.9rem; text-decoration: none; color: #f0ece0; transition: border-color 0.2s; text-align: center; }
+  .cta:hover { border-color: #0085ca; }
+  .cta .icon { font-size: 1.2rem; display: block; margin-bottom: 0.3rem; }
+  .cta strong { display: block; font-size: 0.88rem; color: #fff; margin-bottom: 0.15rem; }
+  .cta small { color: #555; font-size: 0.72rem; }
+  footer { margin-top: auto; border-top: 2px solid #0085ca; background: #080c14; padding: 1.5rem 2rem; text-align: center; }
+  .footer-social { display: flex; justify-content: center; gap: 1.8rem; margin-bottom: 0.8rem; }
+  .footer-social a { color: #444; text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; }
+  .footer-social a:hover { color: #0085ca; }
+  .footer-social svg { width: 18px; height: 18px; fill: #0085ca; }
+  .footer-copy { color: #333; font-size: 0.72rem; letter-spacing: 0.1em; }
 </style>
 </head>
 <body>
-<div class="site">
+<nav>
+  <span class="brand">Bill <span>Randall</span> Comedy</span>
+  <a href="index.html" class="active">Home</a>
+  <a href="clips.html">Clips</a>
+  <a href="press.html">Press</a>
+</nav>
+
+<div class="hero">
   <img class="photo" src="https://i.postimg.cc/j2NFJnQd/11E5738C-448A-4D8A-BCD8-358E268D8420.jpg" alt="Bill Randall" />
-  <h1>Bill Randall</h1>
-  <p class="tagline">Stand-up comedian from Wilkes-Barre, PA</p>
-  <p class="tagline">Comedian. Husband. Dad. Trying to eat better. Failing.</p>
+  <h1>Bill <span>Randall</span></h1>
+  <p class="location">Stand-up comedian · Wilkes-Barre, PA</p>
+  <p class="bio-line">Comedian. Husband. Dad. Trying to eat better. Failing.</p>
+  <div class="social-top">
+    <a href="https://instagram.com/billrandallcomedy" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Instagram
+    </a>
+    <a href="https://x.com/BRandallComedy" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Twitter
+    </a>
+    <a href="https://www.youtube.com/@billrandallcomedy" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      YouTube
+    </a>
+  </div>
   <div class="credits">
     <span class="credit">NEPA's Funniest Semi-Finalist</span>
     <span class="credit">Wisecrackers Comedy Club</span>
     <span class="credit">Good Karma Comedy Fest</span>
   </div>
   <p class="available">Available for bookings</p>
+</div>
+
+<div class="section">
+  <p class="section-title">Upcoming Shows</p>
+  <div id="shows-list"><p class="loading">Loading shows...</p></div>
+</div>
+
+<div class="section">
+  <p class="section-title">Want Bill at Your Show?</p>
   <div class="cta-grid">
     <a class="cta" href="mailto:bill@stand-upcomedy.net">
       <span class="icon">📩</span>
-      <strong>Book Bill for your show</strong>
-      <small>Clubs, bars, corporate events, private shows</small>
+      <strong>Book Bill</strong>
+      <small>Clubs, bars & events</small>
     </a>
-    <a class="cta" href="https://www.youtube.com/@billrandallcomedy" target="_blank">
+    <a class="cta" href="clips.html">
       <span class="icon">🎤</span>
-      <strong>Watch my clips</strong>
-      <small>Stand-up sets & comedy videos</small>
+      <strong>Watch Clips</strong>
+      <small>Stand-up sets</small>
     </a>
   </div>
-  <h2>Upcoming shows</h2>
-  <div class="shows-list" id="shows-list">
-    <p class="loading">Loading shows...</p>
-  </div>
-  <h2>Follow me</h2>
-  <div class="social">
-    <a href="https://instagram.com/billrandallcomedy" target="_blank">📸 Instagram</a>
-    <a href="https://x.com/BRandallComedy" target="_blank">🐦 X / Twitter</a>
-  </div>
-  <footer>© Bill Randall Comedy</footer>
-  <button class="gear-btn" id="gear-btn">⚙</button>
 </div>
 
-<!-- Login -->
-<div class="modal-overlay" id="login-modal">
-  <div class="modal">
-    <h3>🔒 Show manager</h3>
-    <p class="err" id="login-err">Wrong password. Try again.</p>
-    <input type="password" id="pw-input" placeholder="Password" />
-    <div class="btn-row">
-      <button class="btn" id="login-cancel">Cancel</button>
-      <button class="btn primary" id="login-btn">Log in</button>
-    </div>
+<footer>
+  <div class="footer-social">
+    <a href="https://instagram.com/billrandallcomedy" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Instagram
+    </a>
+    <a href="https://x.com/BRandallComedy" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Twitter
+    </a>
+    <a href="https://www.youtube.com/@billrandallcomedy" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      YouTube
+    </a>
   </div>
-</div>
-
-<!-- Menu -->
-<div class="modal-overlay" id="menu-modal">
-  <div class="modal">
-    <h3>⚙️ Show manager</h3>
-    <button class="btn primary full" id="menu-add">Add a show</button>
-    <button class="btn full" id="menu-manage">Edit / delete shows</button>
-    <hr class="menu-divider" />
-    <button class="logout-btn" id="logout-btn">Log out</button>
-  </div>
-</div>
-
-<!-- Add / Edit show -->
-<div class="modal-overlay" id="add-modal">
-  <div class="modal">
-    <h3 id="add-modal-title">➕ Add show</h3>
-    <p class="err" id="save-err"></p>
-    <p class="success-msg" id="save-ok">Show saved!</p>
-    <input type="text" id="f-venue" placeholder="Venue name" />
-    <input type="text" id="f-city" placeholder="City & state" />
-    <input type="date" id="f-date" />
-    <input type="time" id="f-time" />
-    <input type="text" id="f-link" placeholder="Tickets / info link (optional)" />
-    <div class="btn-row">
-      <button class="btn" id="add-cancel">Cancel</button>
-      <button class="btn primary" id="save-btn">Add show</button>
-    </div>
-  </div>
-</div>
-
-<!-- Manage shows -->
-<div class="modal-overlay" id="manage-modal">
-  <div class="modal">
-    <h3>📋 Manage shows</h3>
-    <div id="manage-list"><p class="loading">Loading...</p></div>
-    <hr class="menu-divider" />
-    <button class="btn full" id="manage-back">← Back</button>
-  </div>
-</div>
+  <p class="footer-copy">© 2026 Bill Randall Comedy · All rights reserved</p>
+</footer>
 
 <script>
 const SUPA_URL = 'https://mtudjpkvsawcuzgrqapx.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10dWRqcGt2c2F3Y3V6Z3JxYXB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTY3MjksImV4cCI6MjA5NjM3MjcyOX0.NCdkd8L42LjiOMVr0fvOZHl1nTtAfbjr9Cv9apGLnnk';
-const PASSWORD = 'Comedy2026';
-let loggedIn = false;
-let editingId = null;
-let allShows = [];
-
-async function sbFetch(path, opts = {}) {
-  const res = await fetch(SUPA_URL + path, {
-    ...opts,
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': 'Bearer ' + SUPA_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer || '',
-      ...(opts.headers || {})
-    }
-  });
-  if (!res.ok) { const t = await res.text(); throw new Error(t); }
-  if (res.status === 204) return null;
-  return res.json();
-}
-
-function formatTime(t) {
-  if (!t) return '';
-  const [h, m] = t.split(':');
-  const hr = parseInt(h);
-  return (hr % 12 || 12) + ':' + m + ' ' + (hr >= 12 ? 'PM' : 'AM');
-}
-
-function formatDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' });
-}
 
 async function loadShows() {
   const list = document.getElementById('shows-list');
   try {
-    allShows = await sbFetch('/rest/v1/shows?select=*&order=date.asc,time.asc');
+    const res = await fetch(SUPA_URL + '/rest/v1/shows?select=*&order=date.asc,time.asc', {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+    });
+    const shows = await res.json();
     const now = new Date(); now.setHours(0,0,0,0);
-    const upcoming = allShows.filter(s => new Date(s.date) >= now);
+    const upcoming = shows.filter(s => new Date(s.date) >= now);
     if (!upcoming.length) { list.innerHTML = '<p class="no-shows">No upcoming shows. Check back soon!</p>'; return; }
     list.innerHTML = upcoming.map(s => {
-      const timeStr = s.time ? formatTime(s.time) : '';
-      return '<div class="show-item"><div class="show-venue">' + s.venue + '</div><div class="show-meta">' + s.city + ' &nbsp;·&nbsp; ' + formatDate(s.date) + (timeStr ? ' &nbsp;·&nbsp; ' + timeStr : '') + '</div>' + (s.link ? '<a class="show-link" href="' + s.link + '" target="_blank">Tickets / info →</a>' : '') + '</div>';
+      const d = new Date(s.date + 'T00:00:00');
+      const dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' });
+      const hr = s.time ? parseInt(s.time.split(':')[0]) : null;
+      const timeStr = hr !== null ? (hr%12||12)+':'+s.time.split(':')[1]+' '+(hr>=12?'PM':'AM') : '';
+      return '<div class="show-item"><div class="show-venue">'+s.venue+'</div><div class="show-meta">'+s.city+' · '+dateStr+(timeStr?' · '+timeStr:'')+'</div>'+(s.link?'<a class="show-link" href="'+s.link+'" target="_blank">Tickets / info →</a>':'')+'</div>';
     }).join('');
   } catch(e) { list.innerHTML = '<p class="no-shows">Could not load shows.</p>'; }
 }
-
-function renderManageList() {
-  const el = document.getElementById('manage-list');
-  const now = new Date(); now.setHours(0,0,0,0);
-  const upcoming = allShows.filter(s => new Date(s.date) >= now);
-  if (!upcoming.length) { el.innerHTML = '<p class="no-shows">No upcoming shows.</p>'; return; }
-  el.innerHTML = upcoming.map(s => {
-    return '<div class="manage-show-item"><div class="manage-show-info"><div class="manage-show-venue">' + s.venue + '</div><div class="manage-show-date">' + formatDate(s.date) + ' · ' + s.city + '</div></div><div class="manage-btns"><button class="manage-btn" onclick="openEdit(' + s.id + ')">Edit</button><button class="manage-btn del" onclick="deleteShow(' + s.id + ')">Delete</button></div></div>';
-  }).join('');
-}
-
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-async function deleteShow(id) {
-  if (!confirm('Delete this show?')) return;
-  await sbFetch('/rest/v1/shows?id=eq.' + id, { method: 'DELETE' });
-  await loadShows();
-  renderManageList();
-}
-
-function openEdit(id) {
-  const s = allShows.find(x => x.id === id);
-  if (!s) return;
-  document.getElementById('f-venue').value = s.venue;
-  document.getElementById('f-city').value = s.city;
-  document.getElementById('f-date').value = s.date;
-  document.getElementById('f-time').value = s.time || '';
-  document.getElementById('f-link').value = s.link || '';
-  document.getElementById('save-btn').textContent = 'Update show';
-  document.getElementById('add-modal-title').textContent = '✏️ Edit show';
-  editingId = id;
-  closeModal('manage-modal');
-  openModal('add-modal');
-}
-
-function clearForm() {
-  ['f-venue','f-city','f-date','f-time','f-link'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('save-btn').textContent = 'Add show';
-  document.getElementById('add-modal-title').textContent = '➕ Add show';
-  document.getElementById('save-err').style.display = 'none';
-  document.getElementById('save-ok').style.display = 'none';
-  editingId = null;
-}
-
-async function saveShow() {
-  const venue = document.getElementById('f-venue').value.trim();
-  const city = document.getElementById('f-city').value.trim();
-  const date = document.getElementById('f-date').value;
-  const time = document.getElementById('f-time').value;
-  const link = document.getElementById('f-link').value.trim();
-  const err = document.getElementById('save-err');
-  const ok = document.getElementById('save-ok');
-  err.style.display = 'none'; ok.style.display = 'none';
-  if (!venue || !city || !date) { err.textContent = 'Please fill in venue, location, and date.'; err.style.display = 'block'; return; }
-  const payload = { venue, city, date, time: time || null, link: link || null };
-  try {
-    if (editingId) {
-      await sbFetch('/rest/v1/shows?id=eq.' + editingId, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(payload) });
-    } else {
-      await sbFetch('/rest/v1/shows', { method: 'POST', prefer: 'return=minimal', body: JSON.stringify(payload) });
-    }
-    ok.style.display = 'block';
-    clearForm();
-    await loadShows();
-    setTimeout(() => { ok.style.display = 'none'; closeModal('add-modal'); openModal('menu-modal'); }, 1500);
-  } catch(e) { console.log(e); await loadShows(); }
-}
-
-document.getElementById('gear-btn').addEventListener('click', () => {
-  if (loggedIn) { openModal('menu-modal'); }
-  else { openModal('login-modal'); setTimeout(() => document.getElementById('pw-input').focus(), 100); }
-});
-
-document.getElementById('login-btn').addEventListener('click', () => {
-  if (document.getElementById('pw-input').value === PASSWORD) {
-    loggedIn = true;
-    closeModal('login-modal');
-    document.getElementById('pw-input').value = '';
-    document.getElementById('login-err').style.display = 'none';
-    openModal('menu-modal');
-  } else { document.getElementById('login-err').style.display = 'block'; }
-});
-
-document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
-document.getElementById('login-cancel').addEventListener('click', () => { closeModal('login-modal'); document.getElementById('pw-input').value = ''; document.getElementById('login-err').style.display = 'none'; });
-document.getElementById('menu-add').addEventListener('click', () => { closeModal('menu-modal'); clearForm(); openModal('add-modal'); });
-document.getElementById('menu-manage').addEventListener('click', () => { closeModal('menu-modal'); renderManageList(); openModal('manage-modal'); });
-document.getElementById('logout-btn').addEventListener('click', () => { loggedIn = false; closeModal('menu-modal'); });
-document.getElementById('add-cancel').addEventListener('click', () => { closeModal('add-modal'); clearForm(); openModal('menu-modal'); });
-document.getElementById('save-btn').addEventListener('click', saveShow);
-document.getElementById('manage-back').addEventListener('click', () => { closeModal('manage-modal'); openModal('menu-modal'); });
-
 loadShows();
 </script>
 </body>
