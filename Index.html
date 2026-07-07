@@ -9,30 +9,30 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Open Sans', sans-serif; background: #080c14; color: #f0ece0; min-height: 100vh; display: flex; flex-direction: column; }
   nav { background: #080c14; border-bottom: 2px solid #0085ca; padding: 1rem 2rem; display: flex; align-items: center; gap: 2rem; position: sticky; top: 0; z-index: 10; }
-  nav .brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.15em; color: #fff; margin-right: auto; }
+  nav .brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.15em; color: #fff; margin-right: auto; }
   nav .brand span { color: #0085ca; }
-  nav a { color: #fff; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.2s; }
+  nav a { color: #fff; text-decoration: none; font-size: .8rem; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.2s; }
   nav a.active { color: #0085ca; }
   nav a:hover { color: #0085ca; }
   .hero { text-align: center; padding: 2.5rem 1.5rem 2rem; border-bottom: 1px solid #0d1520; }
-  .photo { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 3px solid #444; margin-bottom: 1.2rem; }
+  .photo { width: 240px; height: 240px; border-radius: 50%; object-fit: cover; border: 3px solid #444; margin-bottom: 1.2rem; }
   .hero h1 { font-family: Georgia, serif; font-size: 2.5rem; font-weight: normal; color: #fff; margin-bottom: 0.2rem; }
   .hero h1 span { color: #0085ca; }
   .hero .location { color: #666; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin: 0.5rem 0 0.8rem; }
-  .hero .bio-line { color: #aaa; font-size: 0.95rem; margin-bottom: 1.2rem; }
+  .hero .bio-line { color: #888; font-size: 1rem; margin-bottom: 1.2rem; }
   .social-top { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .social-top a { display: flex; align-items: center; gap: 0.5rem; color: #888; text-decoration: none; font-size: 0.8rem; border: 1px solid #1a2535; border-radius: 20px; padding: 0.35rem 1rem; transition: all 0.2s; }
+  .social-top a { display: flex; align-items: center; gap: 0.5rem; color: #888; text-decoration: none; font-size: 1rem; border: 1px solid #1a2535; border-radius: 20px; padding: 0.35rem 1rem; transition: all 0.2s; }
   .social-top a:hover { color: #fff; border-color: #0085ca; }
   .social-top svg { width: 14px; height: 14px; fill: #0085ca; flex-shrink: 0; }
-  .credits { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-  .credit { background: #1a1a1a; border: 1px solid #333; border-radius: 20px; padding: 0.3rem 0.9rem; font-size: 0.8rem; color: #ccc; }
-  .available { font-size: 0.75rem; color: #444; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.75rem; }
+   .credits { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin: 1rem 0 1.5rem; }
+  .credit { background: #1a1a1a; border: 1px solid #333; border-radius: 20px; padding: 0.4rem 1.1rem; font-size: 0.95rem; color: #ccc; }
+  .available { font-size: 1rem; color: #888; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
   .section { max-width: 580px; margin: 0 auto; padding: 1.8rem 1.5rem; width: 100%; border-bottom: 1px solid #0d1520; }
-  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; color: #0085ca; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #0d1520; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.2em; text-transform: uppercase; color: #0085ca; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #0d1520; }
   .show-item { background: #0d1520; border-left: 3px solid #0085ca; border-radius: 0 6px 6px 0; padding: 0.9rem 1.1rem; margin-bottom: 0.75rem; }
-  .show-venue { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
-  .show-meta { font-size: 0.8rem; color: #666; }
-  .show-link { font-size: 0.75rem; color: #0085ca; text-decoration: none; display: inline-block; margin-top: 0.3rem; }
+  .show-venue { font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
+  .show-meta { font-size: 1rem; color: #aaa; }
+  .show-link { font-size: .9rem; color: #0085ca; text-decoration: none; display: inline-block; margin-top: 0.3rem; }
   .no-shows { color: #444; font-size: 0.85rem; padding: 1rem 0; }
   .loading { color: #444; font-size: 0.85rem; }
   .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -46,7 +46,7 @@
   .footer-social a { color: #444; text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; }
   .footer-social a:hover { color: #0085ca; }
   .footer-social svg { width: 18px; height: 18px; fill: #0085ca; }
-  .footer-copy { color: #333; font-size: 0.72rem; letter-spacing: 0.1em; }
+  .footer-copy { color: #333; font-size: 0.8rem; letter-spacing: 0.1em; }
 </style>
 </head>
 <body>
