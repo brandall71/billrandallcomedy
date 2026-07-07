@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin · Bill Randall Comedy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Open Sans', sans-serif; background: #080c14; color: #f0ece0; min-height: 100vh; display: flex; flex-direction: column; }
+  nav { background: #080c14; border-bottom: 2px solid #0085ca; padding: 1rem 2rem; display: flex; align-items: center; gap: 2rem; position: sticky; top: 0; z-index: 10; }
+  nav .brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.15em; color: #fff; margin-right: auto; }
+  nav .brand span { color: #0085ca; }
+  nav a { color: #fff; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; transition: color 0.2s; }
+  nav a:hover { color: #0085ca; }
+  .admin-wrap { max-width: 480px; margin: 3rem auto; padding: 0 1.5rem; width: 100%; }
+  .admin-wrap h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.15em; color: #0085ca; margin-bottom: 1.5rem; }
+  .admin-form { background: #0d1520; border: 1px solid #1a2535; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .admin-form h3 { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 1.2rem; }
+  .admin-form input { width: 100%; background: #080c14; border: 1px solid #1a2535; border-radius: 6px; padding: 0.65rem 0.9rem; color: #f0ece0; font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .admin-form input:focus { outline: none; border-color: #0085ca; }
+  .btn-row { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+  .btn { flex: 1; padding: 0.65rem; border-radius: 6px; border: 1px solid #1a2535; background: #0d1520; color: #f0ece0; font-size: 0.88rem; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: #1a2535; }
+  .btn.primary { background: #0085ca; color: #fff; border-color: #0085ca; }
+  .btn.primary:hover { background: #006fa8; }
+  .btn.danger { border-color: #552222; color: #f08080; }
+  .btn.danger:hover { background: #2a1a1a; }
+  .err { color: #f08080; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
+  .success-msg { color: #6dbe8d; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
+  .manage-show-item { background: #080c14; border: 1px solid #1a2535; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .manage-show-info { font-size: 0.85rem; text-align: left; }
+  .manage-show-venue { font-weight: bold; color: #f0ece0; }
+  .manage-show-date { color: #555; font-size: 0.78rem; margin-top: 2px; }
+  .manage-btns { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .manage-btn { background: #0d1520; border: 1px solid #1a2535; border-radius: 5px; color: #aaa; font-size: 0.8rem; padding: 4px 10px; cursor: pointer; }
+  .manage-btn:hover { background: #1a2535; color: #fff; }
+  .manage-btn.del { border-color: #552222; color: #f08080; }
+  .manage-btn.del:hover { background: #2a1a1a; }
+  .menu-divider { border: none; border-top: 1px solid #0d1520; margin: 1rem 0; }
+  .logout-btn { background: none; border: none; color: #444; font-size: 0.8rem; cursor: pointer; display: block; width: 100%; text-align: center; margin-top: 0.5rem; }
+  .logout-btn:hover { color: #888; }
+  .no-shows { color: #444; font-size: 0.85rem; padding: 1rem 0; }
+  .loading { color: #444; font-size: 0.85rem; }
+  footer { margin-top: auto; border-top: 2px solid #0085ca; background: #080c14; padding: 1.5rem 2rem; text-align: center; }
+  .footer-copy { color: #333; font-size: 0.72rem; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">Bill <span>Randall</span> Comedy</span>
+  <a href="index.html">Home</a>
+  <a href="clips.html">Clips</a>
+  <a href="press.html">Press</a>
+</nav>
+
+<div class="admin-wrap">
+  <h2>Show Manager</h2>
+
+  <div class="admin-form" id="admin-login">
+    <h3>🔒 Login</h3>
+    <p class="err" id="login-err">Wrong password.</p>
+    <input type="password" id="pw-input" placeholder="Password" />
+    <div class="btn-row">
+      <button class="btn primary" id="login-btn">Log in</button>
+    </div>
+  </div>
+
+  <div id="admin-manager" style="display:none;">
+    <div class="admin-form">
+      <h3 id="form-title">➕ Add Show</h3>
+      <p class="err" id="save-err"></p>
+      <p class="success-msg" id="save-ok">Show saved!</p>
+      <input type="text" id="f-venue" placeholder="Venue name" />
+      <input type="text" id="f-city" placeholder="City & state" />
+      <input type="date" id="f-date" />
+      <input type="time" id="f-time" />
+      <input type="text" id="f-link" placeholder="Tickets / info link (optional)" />
+      <div class="btn-row">
+        <button class="btn" id="clear-btn">Clear</button>
+        <button class="btn primary" id="save-btn">Add Show</button>
+      </div>
+    </div>
+
+    <div class="admin-form">
+      <h3>📋 Manage Shows</h3>
+      <div id="manage-list"><p class="loading">Loading...</p></div>
+    </div>
+
+    <button class="logout-btn" id="logout-btn">Log out</button>
+  </div>
+</div>
+
+<footer>
+  <p class="footer-copy">© 2026 Bill Randall Comedy · All rights reserved</p>
+</footer>
+
+<script>
+const SUPA_URL = 'https://mtudjpkvsawcuzgrqapx.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10dWRqcGt2c2F3Y3V6Z3JxYXB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTY3MjksImV4cCI6MjA5NjM3MjcyOX0.NCdkd8L42LjiOMVr0fvOZHl1nTtAfbjr9Cv9apGLnnk';
+const PASSWORD = 'Comedy2026';
+let editingId = null;
+let allShows = [];
+
+async function sbFetch(path, opts = {}) {
+  const res = await fetch(SUPA_URL + path, {
+    ...opts,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || '',
+      ...(opts.headers || {})
+    }
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error(t); }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' });
+}
+
+async function loadManageList() {
+  const el = document.getElementById('manage-list');
+  try {
+    allShows = await sbFetch('/rest/v1/shows?select=*&order=date.asc,time.asc');
+    const now = new Date(); now.setHours(0,0,0,0);
+    const upcoming = allShows.filter(s => new Date(s.date) >= now);
+    if (!upcoming.length) { el.innerHTML = '<p class="no-shows">No upcoming shows.</p>'; return; }
+    el.innerHTML = upcoming.map(s => {
+      return '<div class="manage-show-item"><div class="manage-show-info"><div class="manage-show-venue">'+s.venue+'</div><div class="manage-show-date">'+formatDate(s.date)+' · '+s.city+'</div></div><div class="manage-btns"><button class="manage-btn" onclick="openEdit('+s.id+')">Edit</button><button class="manage-btn del" onclick="deleteShow('+s.id+')">Delete</button></div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<p class="no-shows">Could not load.</p>'; }
+}
+
+function clearForm() {
+  ['f-venue','f-city','f-date','f-time','f-link'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('save-btn').textContent = 'Add Show';
+  document.getElementById('form-title').textContent = '➕ Add Show';
+  document.getElementById('save-err').style.display = 'none';
+  document.getElementById('save-ok').style.display = 'none';
+  editingId = null;
+}
+
+function openEdit(id) {
+  const s = allShows.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('f-venue').value = s.venue;
+  document.getElementById('f-city').value = s.city;
+  document.getElementById('f-date').value = s.date;
+  document.getElementById('f-time').value = s.time || '';
+  document.getElementById('f-link').value = s.link || '';
+  document.getElementById('save-btn').textContent = 'Update Show';
+  document.getElementById('form-title').textContent = '✏️ Edit Show';
+  editingId = id;
+  window.scrollTo(0, 0);
+}
+
+async function deleteShow(id) {
+  if (!confirm('Delete this show?')) return;
+  await sbFetch('/rest/v1/shows?id=eq.' + id, { method: 'DELETE' });
+  await loadManageList();
+}
+
+async function saveShow() {
+  const venue = document.getElementById('f-venue').value.trim();
+  const city = document.getElementById('f-city').value.trim();
+  const date = document.getElementById('f-date').value;
+  const time = document.getElementById('f-time').value;
+  const link = document.getElementById('f-link').value.trim();
+  const err = document.getElementById('save-err');
+  const ok = document.getElementById('save-ok');
+  err.style.display = 'none'; ok.style.display = 'none';
+  if (!venue || !city || !date) { err.textContent = 'Please fill in venue, location, and date.'; err.style.display = 'block'; return; }
+  const payload = { venue, city, date, time: time || null, link: link || null };
+  try {
+    if (editingId) {
+      await sbFetch('/rest/v1/shows?id=eq.' + editingId, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(payload) });
+    } else {
+      await sbFetch('/rest/v1/shows', { method: 'POST', prefer: 'return=minimal', body: JSON.stringify(payload) });
+    }
+    ok.style.display = 'block';
+    clearForm();
+    await loadManageList();
+    setTimeout(() => { ok.style.display = 'none'; }, 2000);
+  } catch(e) { console.log(e); await loadManageList(); }
+}
+
+document.getElementById('login-btn').addEventListener('click', () => {
+  if (document.getElementById('pw-input').value === PASSWORD) {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-manager').style.display = 'block';
+    loadManageList();
+  } else { document.getElementById('login-err').style.display = 'block'; }
+});
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+document.getElementById('save-btn').addEventListener('click', saveShow);
+document.getElementById('clear-btn').addEventListener('click', clearForm);
+document.getElementById('logout-btn').addEventListener('click', () => {
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-manager').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+});
+</script>
+</body>
+</html>
