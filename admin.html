@@ -1,3 +1,6 @@
+Now I'll update the admin and index pages. Let's start with `admin.html` — go to GitHub, open `admin.html`, tap the pencil to edit, select all and replace with this:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,13 +22,13 @@
   .admin-form h3 { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 1.2rem; }
   .admin-form input { width: 100%; background: #080c14; border: 1px solid #1a2535; border-radius: 6px; padding: 0.65rem 0.9rem; color: #f0ece0; font-size: 0.9rem; margin-bottom: 0.75rem; }
   .admin-form input:focus { outline: none; border-color: #0085ca; }
+  .field-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin-bottom: 0.3rem; display: block; }
+  .optional { color: #333; font-size: 0.68rem; margin-left: 0.4rem; }
   .btn-row { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
   .btn { flex: 1; padding: 0.65rem; border-radius: 6px; border: 1px solid #1a2535; background: #0d1520; color: #f0ece0; font-size: 0.88rem; cursor: pointer; transition: background 0.2s; }
   .btn:hover { background: #1a2535; }
   .btn.primary { background: #0085ca; color: #fff; border-color: #0085ca; }
   .btn.primary:hover { background: #006fa8; }
-  .btn.danger { border-color: #552222; color: #f08080; }
-  .btn.danger:hover { background: #2a1a1a; }
   .err { color: #f08080; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
   .success-msg { color: #6dbe8d; font-size: 0.82rem; margin-bottom: 0.75rem; display: none; }
   .manage-show-item { background: #080c14; border: 1px solid #1a2535; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
@@ -71,11 +74,18 @@
       <h3 id="form-title">➕ Add Show</h3>
       <p class="err" id="save-err"></p>
       <p class="success-msg" id="save-ok">Show saved!</p>
-      <input type="text" id="f-venue" placeholder="Venue name" />
-      <input type="text" id="f-city" placeholder="City & state" />
+      <label class="field-label">Venue name</label>
+      <input type="text" id="f-venue" placeholder="e.g. Wisecrackers Comedy Club" />
+      <label class="field-label">Venue details <span class="optional">(optional)</span></label>
+      <input type="text" id="f-details" placeholder="e.g. Located inside Mohegan Sun Casino" />
+      <label class="field-label">City & state</label>
+      <input type="text" id="f-city" placeholder="e.g. Wilkes-Barre, PA" />
+      <label class="field-label">Date <span class="optional">(leave blank for TBA)</span></label>
       <input type="date" id="f-date" />
+      <label class="field-label">Time <span class="optional">(optional)</span></label>
       <input type="time" id="f-time" />
-      <input type="text" id="f-link" placeholder="Tickets / info link (optional)" />
+      <label class="field-label">Tickets / info link <span class="optional">(optional)</span></label>
+      <input type="text" id="f-link" placeholder="https://..." />
       <div class="btn-row">
         <button class="btn" id="clear-btn">Clear</button>
         <button class="btn primary" id="save-btn">Add Show</button>
@@ -119,6 +129,7 @@ async function sbFetch(path, opts = {}) {
 }
 
 function formatDate(dateStr) {
+  if (!dateStr) return 'Date TBA';
   const d = new Date(dateStr + 'T00:00:00');
   return d.toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' });
 }
@@ -126,18 +137,16 @@ function formatDate(dateStr) {
 async function loadManageList() {
   const el = document.getElementById('manage-list');
   try {
-    allShows = await sbFetch('/rest/v1/shows?select=*&order=date.asc,time.asc');
-    const now = new Date(); now.setHours(0,0,0,0);
-    const upcoming = allShows.filter(s => new Date(s.date) >= now);
-    if (!upcoming.length) { el.innerHTML = '<p class="no-shows">No upcoming shows.</p>'; return; }
-    el.innerHTML = upcoming.map(s => {
+    allShows = await sbFetch('/rest/v1/shows?select=*&order=date.asc.nullslast,time.asc');
+    if (!allShows.length) { el.innerHTML = '<p class="no-shows">No shows.</p>'; return; }
+    el.innerHTML = allShows.map(s => {
       return '<div class="manage-show-item"><div class="manage-show-info"><div class="manage-show-venue">'+s.venue+'</div><div class="manage-show-date">'+formatDate(s.date)+' · '+s.city+'</div></div><div class="manage-btns"><button class="manage-btn" onclick="openEdit('+s.id+')">Edit</button><button class="manage-btn del" onclick="deleteShow('+s.id+')">Delete</button></div></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<p class="no-shows">Could not load.</p>'; }
 }
 
 function clearForm() {
-  ['f-venue','f-city','f-date','f-time','f-link'].forEach(id => document.getElementById(id).value = '');
+  ['f-venue','f-details','f-city','f-date','f-time','f-link'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('save-btn').textContent = 'Add Show';
   document.getElementById('form-title').textContent = '➕ Add Show';
   document.getElementById('save-err').style.display = 'none';
@@ -149,8 +158,9 @@ function openEdit(id) {
   const s = allShows.find(x => x.id === id);
   if (!s) return;
   document.getElementById('f-venue').value = s.venue;
+  document.getElementById('f-details').value = s.details || '';
   document.getElementById('f-city').value = s.city;
-  document.getElementById('f-date').value = s.date;
+  document.getElementById('f-date').value = s.date || '';
   document.getElementById('f-time').value = s.time || '';
   document.getElementById('f-link').value = s.link || '';
   document.getElementById('save-btn').textContent = 'Update Show';
@@ -167,6 +177,7 @@ async function deleteShow(id) {
 
 async function saveShow() {
   const venue = document.getElementById('f-venue').value.trim();
+  const details = document.getElementById('f-details').value.trim();
   const city = document.getElementById('f-city').value.trim();
   const date = document.getElementById('f-date').value;
   const time = document.getElementById('f-time').value;
@@ -174,8 +185,8 @@ async function saveShow() {
   const err = document.getElementById('save-err');
   const ok = document.getElementById('save-ok');
   err.style.display = 'none'; ok.style.display = 'none';
-  if (!venue || !city || !date) { err.textContent = 'Please fill in venue, location, and date.'; err.style.display = 'block'; return; }
-  const payload = { venue, city, date, time: time || null, link: link || null };
+  if (!venue || !city) { err.textContent = 'Please fill in venue and city.'; err.style.display = 'block'; return; }
+  const payload = { venue, details: details || null, city, date: date || null, time: time || null, link: link || null };
   try {
     if (editingId) {
       await sbFetch('/rest/v1/shows?id=eq.' + editingId, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(payload) });
@@ -207,3 +218,6 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+```
+
+Commit that, then let me know and I'll give you the updated `index.html`!
