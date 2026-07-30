@@ -37,7 +37,6 @@
   .manage-btn:hover { background: #1a2535; color: #fff; }
   .manage-btn.del { border-color: #552222; color: #f08080; }
   .manage-btn.del:hover { background: #2a1a1a; }
-  .menu-divider { border: none; border-top: 1px solid #0d1520; margin: 1rem 0; }
   .logout-btn { background: none; border: none; color: #444; font-size: 0.8rem; cursor: pointer; display: block; width: 100%; text-align: center; margin-top: 0.5rem; }
   .logout-btn:hover { color: #888; }
   .no-shows { color: #444; font-size: 0.85rem; padding: 1rem 0; }
@@ -62,7 +61,7 @@
     <p class="err" id="login-err">Wrong password.</p>
     <input type="password" id="pw-input" placeholder="Password" />
     <div class="btn-row">
-      <button class="btn primary" id="login-btn">Log in</button>
+      <button class="btn primary" onclick="doLogin()">Log in</button>
     </div>
   </div>
 
@@ -84,8 +83,8 @@
       <label class="field-label">Tickets / info link <span class="optional">(optional)</span></label>
       <input type="text" id="f-link" placeholder="https://..." />
       <div class="btn-row">
-        <button class="btn" id="clear-btn">Clear</button>
-        <button class="btn primary" id="save-btn">Add Show</button>
+        <button class="btn" onclick="clearForm()">Clear</button>
+        <button class="btn primary" onclick="saveShow()">Add Show</button>
       </div>
     </div>
 
@@ -94,7 +93,7 @@
       <div id="manage-list"><p class="loading">Loading...</p></div>
     </div>
 
-    <button class="logout-btn" id="logout-btn">Log out</button>
+    <button class="logout-btn" onclick="doLogout()">Log out</button>
   </div>
 </div>
 
@@ -109,16 +108,38 @@ const PASSWORD = 'Comedy2026';
 let editingId = null;
 let allShows = [];
 
-async function sbFetch(path, opts = {}) {
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === PASSWORD) {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-manager').style.display = 'block';
+    loadManageList();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-manager').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+}
+
+document.getElementById('pw-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function sbFetch(path, opts) {
+  opts = opts || {};
   const res = await fetch(SUPA_URL + path, {
-    ...opts,
+    method: opts.method || 'GET',
     headers: {
       'apikey': SUPA_KEY,
       'Authorization': 'Bearer ' + SUPA_KEY,
       'Content-Type': 'application/json',
-      'Prefer': opts.prefer || '',
-      ...(opts.headers || {})
-    }
+      'Prefer': opts.prefer || ''
+    },
+    body: opts.body || undefined
   });
   if (!res.ok) { const t = await res.text(); throw new Error(t); }
   if (res.status === 204) return null;
@@ -133,35 +154,46 @@ function formatDate(dateStr) {
 
 async function loadManageList() {
   const el = document.getElementById('manage-list');
+  el.innerHTML = '<p class="loading">Loading...</p>';
   try {
     allShows = await sbFetch('/rest/v1/shows?select=*&order=date.asc.nullslast,time.asc');
-    if (!allShows.length) { el.innerHTML = '<p class="no-shows">No shows.</p>'; return; }
-    el.innerHTML = allShows.map(s => {
+    if (!allShows.length) { el.innerHTML = '<p class="no-shows">No shows yet.</p>'; return; }
+    el.innerHTML = allShows.map(function(s) {
       return '<div class="manage-show-item"><div class="manage-show-info"><div class="manage-show-venue">'+s.venue+'</div><div class="manage-show-date">'+formatDate(s.date)+' · '+s.city+'</div></div><div class="manage-btns"><button class="manage-btn" onclick="openEdit('+s.id+')">Edit</button><button class="manage-btn del" onclick="deleteShow('+s.id+')">Delete</button></div></div>';
     }).join('');
-  } catch(e) { el.innerHTML = '<p class="no-shows">Could not load.</p>'; }
+  } catch(e) {
+    el.innerHTML = '<p class="no-shows">Could not load.</p>';
+    console.log(e);
+  }
 }
 
 function clearForm() {
-  ['f-venue','f-details','f-city','f-date','f-time','f-link'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('save-btn').textContent = 'Add Show';
+  ['f-venue','f-details','f-city','f-date','f-time','f-link'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
   document.getElementById('form-title').textContent = '➕ Add Show';
   document.getElementById('save-err').style.display = 'none';
   document.getElementById('save-ok').style.display = 'none';
   editingId = null;
+  var btn = document.querySelector('#admin-manager .btn.primary');
+  if (btn) btn.textContent = 'Add Show';
 }
 
 function openEdit(id) {
-  const s = allShows.find(x => x.id === id);
+  var s = null;
+  for (var i = 0; i < allShows.length; i++) {
+    if (allShows[i].id === id) { s = allShows[i]; break; }
+  }
   if (!s) return;
-  document.getElementById('f-venue').value = s.venue;
+  document.getElementById('f-venue').value = s.venue || '';
   document.getElementById('f-details').value = s.details || '';
-  document.getElementById('f-city').value = s.city;
+  document.getElementById('f-city').value = s.city || '';
   document.getElementById('f-date').value = s.date || '';
   document.getElementById('f-time').value = s.time || '';
   document.getElementById('f-link').value = s.link || '';
-  document.getElementById('save-btn').textContent = 'Update Show';
   document.getElementById('form-title').textContent = '✏️ Edit Show';
+  var btn = document.querySelector('#admin-manager .btn.primary');
+  if (btn) btn.textContent = 'Update Show';
   editingId = id;
   window.scrollTo(0, 0);
 }
@@ -173,17 +205,29 @@ async function deleteShow(id) {
 }
 
 async function saveShow() {
-  const venue = document.getElementById('f-venue').value.trim();
-  const details = document.getElementById('f-details').value.trim();
-  const city = document.getElementById('f-city').value.trim();
-  const date = document.getElementById('f-date').value;
-  const time = document.getElementById('f-time').value;
-  const link = document.getElementById('f-link').value.trim();
-  const err = document.getElementById('save-err');
-  const ok = document.getElementById('save-ok');
-  err.style.display = 'none'; ok.style.display = 'none';
-  if (!venue || !city) { err.textContent = 'Please fill in venue and city.'; err.style.display = 'block'; return; }
-  const payload = { venue, details: details || null, city, date: date || null, time: time || null, link: link || null };
+  var venue = document.getElementById('f-venue').value.trim();
+  var details = document.getElementById('f-details').value.trim();
+  var city = document.getElementById('f-city').value.trim();
+  var date = document.getElementById('f-date').value;
+  var time = document.getElementById('f-time').value;
+  var link = document.getElementById('f-link').value.trim();
+  var err = document.getElementById('save-err');
+  var ok = document.getElementById('save-ok');
+  err.style.display = 'none';
+  ok.style.display = 'none';
+  if (!venue || !city) {
+    err.textContent = 'Please fill in venue and city.';
+    err.style.display = 'block';
+    return;
+  }
+  var payload = {
+    venue: venue,
+    details: details || null,
+    city: city,
+    date: date || null,
+    time: time || null,
+    link: link || null
+  };
   try {
     if (editingId) {
       await sbFetch('/rest/v1/shows?id=eq.' + editingId, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(payload) });
@@ -193,25 +237,12 @@ async function saveShow() {
     ok.style.display = 'block';
     clearForm();
     await loadManageList();
-    setTimeout(() => { ok.style.display = 'none'; }, 2000);
-  } catch(e) { console.log(e); await loadManageList(); }
+    setTimeout(function() { ok.style.display = 'none'; }, 2000);
+  } catch(e) {
+    console.log(e);
+    await loadManageList();
+  }
 }
-
-document.getElementById('login-btn').addEventListener('click', () => {
-  if (document.getElementById('pw-input').value === PASSWORD) {
-    document.getElementById('admin-login').style.display = 'none';
-    document.getElementById('admin-manager').style.display = 'block';
-    loadManageList();
-  } else { document.getElementById('login-err').style.display = 'block'; }
-});
-document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
-document.getElementById('save-btn').addEventListener('click', saveShow);
-document.getElementById('clear-btn').addEventListener('click', clearForm);
-document.getElementById('logout-btn').addEventListener('click', () => {
-  document.getElementById('admin-login').style.display = 'block';
-  document.getElementById('admin-manager').style.display = 'none';
-  document.getElementById('pw-input').value = '';
-});
 </script>
 </body>
 </html>
