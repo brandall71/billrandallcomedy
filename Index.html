@@ -45,7 +45,13 @@ nav a:hover { color: #0085ca; }
   .show-details { font-size: 1.3rem; color: #aaa; margin-top: 0.15rem; }
   .tickets-btn { display: inline-block; background: #0085ca; color: #fff; text-decoration: none; padding: 0.75rem 3rem; border-radius: 6px; font-size: 1.4rem; font-weight: 600; white-space: nowrap; flex-shrink: 0; transition: background 0.2s; }
   .tickets-btn:hover { background: #006fa8; }
-@media (max-width: 600px) { .show-item { flex-direction: column; align-items: center; text-align: center; } .show-info { width: 100%; text-align: center; } .tickets-btn { width: 100%; text-align: center; margin-top: 0.5rem; } }
+@media (max-width: 600px) { 
+  .show-item { flex-direction: column; align-items: center; text-align: center; } 
+  .show-info { width: 100%; text-align: center; } 
+  .tickets-btn { width: 100%; text-align: center; margin-top: 0.5rem; } 
+  .footer-social { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+  .footer-social a { flex: 0 0 40%; justify-content: center; }
+}
   .tickets-btn.disabled { background: #2d3748; color: #ffffff; 
 cursor: default; pointer-events: none; }
   .show-link { font-size: 1.2rem; color: #0085ca; text-decoration: none; display: inline-block; margin-top: 0.3rem; }
