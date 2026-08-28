@@ -127,7 +127,8 @@ cursor: default; pointer-events: none; }
   <p class="signup-title">Stay in the Loop</p>
   <p class="signup-desc">Get notified about upcoming shows and new content. No spam — just comedy.</p>
   <div class="signup-success" id="signup-success">🎤 You're in! Check your email to confirm your subscription.</div>
-  <form class="signup-form" id="signup-form">
+ <form class="signup-form" id="signup-form">
+ <input type="text" name="website" id="honeypot" style="display:none;" tabindex="-1" autocomplete="off" />
     <input class="signup-input" type="email" id="signup-email" placeholder="Email address (required)" required />
     <input class="signup-input" type="tel" id="signup-phone" placeholder="Mobile number (optional)" />
     <button class="signup-btn" type="submit">Keep Me Posted</button>
@@ -215,6 +216,7 @@ document.addEventListener('click', function(e) {
 });
 document.getElementById('signup-form').addEventListener('submit', async function(e) {
   e.preventDefault();
+  if (document.getElementById('honeypot').value !== '') return;
   const email = document.getElementById('signup-email').value.trim();
   const phone = document.getElementById('signup-phone').value.trim();
   const err = document.getElementById('signup-error');
